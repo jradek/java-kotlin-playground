@@ -1,3 +1,7 @@
+/.classpath
+/.project
+/.settings/org.eclipse.buildship.core.prefs
+
 # Ignore Gradle project-specific cache directory
 .gradle/
 gradle/
