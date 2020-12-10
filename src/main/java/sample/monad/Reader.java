@@ -1,5 +1,6 @@
 package sample.monad;
 
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 /**
@@ -9,10 +10,10 @@ import java.util.function.Function;
  *
  * See: https://medium.com/@johnmcclean/dependency-injection-using-the-reader-monad-in-java8-9056d9501c75
  */
-public class Reader<R, A> {
-  private Function<R, A> m_func;
+public class Reader<CTX, A> {
+  private final Function<CTX, A> m_func;
 
-  private Reader(Function<R, A> f) {
+  private Reader(Function<CTX, A> f) {
     m_func = f;
   }
 
@@ -20,10 +21,10 @@ public class Reader<R, A> {
    * The ask method for the Reader allows to flatMap over the context itself without
    * the need for a Reader instance
    *
-   * @param <R> the context
+   * @param <CTX> the context
    * @return Constructed reader
    */
-  static <R> Reader<R, R> ask() {
+  static <CTX> Reader<CTX, CTX> ask() {
     return of(Function.identity());
   }
 
@@ -31,31 +32,46 @@ public class Reader<R, A> {
     return new Reader<>(f);
   }
 
-  public A apply(R ctx) {
+  public A apply(CTX ctx) {
     return m_func.apply(ctx);
   }
 
   /**
    * Unit
    */
-  static <R, A> Reader<R, A> pure(A a) {
+  static <CTX, A> Reader<CTX, A> pure(A a) {
     return new Reader<>(ctx -> a);
   }
 
-  <B> Reader<R, B> map(Function<? super A, ? extends B> f) {
+  <B> Reader<CTX, B> map(Function<? super A, ? extends B> f) {
+//    Working out the types
+//
+//    Function<CTX, B> newReaderFunc = m_func.andThen(f);
+//    Reader<CTX, B> result = Reader.of(newReaderFunc);
+//    return result;
+
     return new Reader<>(m_func.andThen(f));
   }
 
-  <B> Reader<R, B> flatMap(Function<? super A, Reader<R, ? extends B>> f) {
+  <B> Reader<CTX, B> flatMap(Function<? super A, Reader<CTX, ? extends B>> f) {
 //    Working out the types
 //
-//    R ctx = null;
-//    Function<R, Reader<R, ? extends B>> appliedFunc = m_func.andThen(f);
-//    Reader<R, ? extends B> reader = appliedFunc.apply(ctx);
-//    Function<R, B> newReaderFunc = ctx2 -> reader.apply(ctx2);
-//    Reader<R, B> result = Reader.of(newReaderFunc);
+//    Function<CTX, Reader<CTX, ? extends B>> appliedFunc = m_func.andThen(f);
+//    CTX ctx = null;
+//    Reader<CTX, ? extends B> reader = appliedFunc.apply(ctx);
+//    Function<CTX, B> newReaderFunc = ctx2 -> reader.apply(ctx2);
+//    Reader<CTX, B> result = Reader.of(newReaderFunc);
 //    return result;
 
-    return new Reader<>(ctx -> m_func.andThen(f).apply(ctx).apply(ctx));
+    return new Reader<>((CTX ctx) -> m_func.andThen(f).apply(ctx).apply(ctx));
+  }
+
+  // Extension by Mario Fusco
+  // https://www.youtube.com/watch?v=84MfG4tp30s
+  public static <CTX, A> Reader<CTX, A> lift(A obj, BiConsumer<A, CTX> injector) {
+    return Reader.of(ctx -> {
+      injector.accept(obj, ctx);
+      return obj;
+    });
   }
 }
