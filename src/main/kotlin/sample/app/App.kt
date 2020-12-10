@@ -3,6 +3,7 @@ package sample.app
 import sample.Foo
 import sample.THING
 import sample.getLogger
+import sample.monad.ReaderTest
 import sample.process
 
 class App {
@@ -53,4 +54,6 @@ fun main(args: Array<String>) {
         })
         println("$i -> $v")
     }
+
+    ReaderTest.run()
 }
