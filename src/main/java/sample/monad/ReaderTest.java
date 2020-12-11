@@ -58,11 +58,13 @@ public class ReaderTest {
         .flatMap(ctx -> {
           System.out.println("<html arg='" + ctx.name + "'>");
           return nav();
-        });
+        })
+        .flatMap(_x -> Reader.ask())
+        .flatMap(_x -> nav());
   }
 
   static class Logger {
-    private String prefix = "Logger: ";
+    private final String prefix;
     public Logger(String p) {
       prefix = p;
     }
@@ -113,10 +115,6 @@ public class ReaderTest {
 
     html().apply(new Context("heino", null));
 
-//    Account account = new Account();
-//    account.open("Alice")
-//        .credit(200.0)
-//        .debit(100);
 
     // lift the 'logger' "dependency" into the account
     Account firstAccount = new Account();

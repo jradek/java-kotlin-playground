@@ -64,6 +64,6 @@ dependencies {
 
 test {
     testLogging {
-        events "FAILED", "SKIPPED"
+        events "PASSED", "FAILED", "SKIPPED"
     }
 }
