@@ -1,4 +1,6 @@
-# Running and debuging a mixed java/kotlin project with VS code
+# Playing with java and kotlin in one project
+
+It supports running and debuging a mixed java/kotlin project with VS code or IntelliJ
 
 ## Building
 
@@ -22,31 +24,3 @@ An "uberJar" containing all dependencies is built in `build/shadowJar`.
     ```console
     java -cp "build/libs/*" sample.app.AppKt
     ```
-
-## Debugging
-
-Debug settings in `.vscode/lauch.json`
-
-```json
-{
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "type": "kotlin",
-            "request": "launch",
-            "name": "Kotlin Launch",
-            "projectRoot": "${workspaceFolder}",
-            "mainClass": "sample/app/AppKt",
-            "preLaunchTask": "build"
-        },
-        {
-            "type": "java",
-            "request": "launch",
-            "name": "Java Launch",
-            "projectRoot": "${workspaceFolder}",
-            "mainClass": "sample.app.Main",
-            "preLaunchTask": "build"
-        }
-    ]
-}
-```

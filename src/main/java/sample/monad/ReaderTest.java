@@ -63,46 +63,6 @@ public class ReaderTest {
         .flatMap(_x -> nav());
   }
 
-  static class Logger {
-    private final String prefix;
-    public Logger(String p) {
-      prefix = p;
-    }
-
-    public void accept(String s) {
-      System.out.println(prefix + s);
-    }
-  }
-
-  static class Account {
-
-    private Logger logger = null;
-    private String owner;
-    private double balance;
-
-    public Account open(String owner) {
-      this.owner = owner;
-      logger.accept("opened account for " + owner);
-      return this;
-    }
-
-    public Account credit(double amount) {
-      this.balance += amount;
-      logger.accept("credit " + amount + " for " + owner);
-      return this;
-    }
-
-    public Account debit(double amount) {
-      this.balance -= amount;
-      logger.accept("debit " + amount + " from " + owner);
-      return this;
-    }
-
-    public void setLogger(Logger l) {
-      logger = l;
-    }
-  }
-
 
   public static void run() {
 
@@ -114,32 +74,6 @@ public class ReaderTest {
         .apply(new Context("Michael", new UseCase()));
 
     html().apply(new Context("heino", null));
-
-
-    // lift the 'logger' "dependency" into the account
-    Account firstAccount = new Account();
-    Reader<Logger, Account> reader = Reader.lift(firstAccount, (a, l) -> a.setLogger(l));
-    reader.map(a -> a.open("Alice"))
-        .map(a -> a.credit(200.0))
-        .map(a -> a.debit(100))
-        .flatMap(a -> {
-            a.debit(10);
-            return Reader.ask();
-        })
-        .map(l -> {
-          l.accept("--- switching accounts ---");
-          return l;
-        })
-        .flatMap(a -> Reader.lift(new Account(), (acc, l) -> acc.setLogger(l)))
-        .map(a -> a.open("Bob"))
-        .map(a -> a.credit(666))
-        .flatMap(a -> Reader.ask())
-        .map(l -> {
-          l.accept("--- switching accounts back ---");
-          return firstAccount;
-        })
-        .map(a -> a.debit(333))
-        .apply(new Logger("The Logger: "));
   }
 
 }

@@ -66,12 +66,4 @@ public class Reader<CTX, A> {
     return new Reader<>((CTX ctx) -> m_func.andThen(f).apply(ctx).apply(ctx));
   }
 
-  // Extension by Mario Fusco
-  // https://www.youtube.com/watch?v=84MfG4tp30s
-  public static <CTX, A> Reader<CTX, A> lift(A obj, BiConsumer<A, CTX> injector) {
-    return Reader.of(ctx -> {
-      injector.accept(obj, ctx);
-      return obj;
-    });
-  }
 }
