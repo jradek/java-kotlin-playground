@@ -72,6 +72,16 @@ public class ReaderDITest {
     }
   }
 
+  @Test(expected = NullPointerException.class)
+  public void noLoggerInjected() {
+    Reader<Logger, Logger> reader = Reader.ask();
+
+    reader.map(_unused -> new Account())
+        .map(a -> a.open("Alice"))
+        .map(a -> a.credit(100)) // logger was never injected
+        .apply(new Logger());
+  }
+
 
   @Test
   public void multipleAccounts() {
