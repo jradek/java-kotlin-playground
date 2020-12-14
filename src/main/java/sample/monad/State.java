@@ -38,7 +38,7 @@ public class State<S, A> {
      * @return
      */
     public static <S> State<S, Nothing> set(S s) {
-        return of(x -> new Tuple2<>(s, Nothing.INSTANCE));
+        return of(_unused -> new Tuple2<>(s, Nothing.INSTANCE));
     }
 
     public static  <S, A> State<S, A> gets(Function<S, A> f) {
@@ -58,7 +58,7 @@ public class State<S, A> {
     }
 
     /**
-     * modify state an keep value
+     * modify state and keep value
      * @param f
      * @param value
      * @param <S>
@@ -71,6 +71,10 @@ public class State<S, A> {
 
     public Tuple2<S, A> run(S initial) {
         return m_func.apply(initial);
+    }
+
+    public A eval(S initial) {
+        return run(initial)._2;
     }
 
     public <B> State<S, B> map(Function<? super A, ? extends B> f) {
