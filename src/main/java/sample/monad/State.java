@@ -21,9 +21,6 @@ public class State<S, A> {
 
     /**
      * The get method creates a function that simply returns the argument’s state both as the state and the value:
-     *
-     * @param <S>
-     * @return
      */
     public static <S> State<S, S> get() {
         return of(s -> new Tuple2<>(s, s));
@@ -32,10 +29,6 @@ public class State<S, A> {
     /**
      * The set method creates a function that returns the parameter’s state as the new state
      * and the Nothing singleton as the value
-     *
-     * @param s
-     * @param <S>
-     * @return
      */
     public static <S> State<S, Nothing> set(S s) {
         return of(_unused -> new Tuple2<>(s, Nothing.INSTANCE));
@@ -48,10 +41,6 @@ public class State<S, A> {
     /**
      * This method returns a State<S, Nothing> because it doesn’t return a value.
      * It allows to modify the state directly
-     *
-     * @param f state mutating function
-     * @param <S>
-     * @return new state
      */
     public static <S> State<S, Nothing> modify(Function<S, S> f) {
         return of(s -> new Tuple2<>(f.apply(s), Nothing.INSTANCE));
@@ -59,11 +48,6 @@ public class State<S, A> {
 
     /**
      * modify state and keep value
-     * @param f
-     * @param value
-     * @param <S>
-     * @param <A>
-     * @return
      */
     public static <S, A> State<S, A> modify(Function<S, S> f, A value) {
         return of(s -> new Tuple2<>(f.apply(s), value));
@@ -78,6 +62,11 @@ public class State<S, A> {
     }
 
     public <B> State<S, B> map(Function<? super A, ? extends B> f) {
+//    Same as:
+
+//        return flatMap(a -> State.pure(f.apply(a)));
+
+
         return of(s -> {
            Tuple2<S, A> mapped = run(s);
            return new Tuple2<>(mapped._1, f.apply(mapped._2));
