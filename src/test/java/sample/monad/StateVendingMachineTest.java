@@ -1,11 +1,12 @@
 package sample.monad;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.CoreMatchers.*;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import org.junit.Test;
 
 /**
@@ -123,13 +124,13 @@ public class StateVendingMachineTest {
   /**
    * Build one function the drives the machine
    */
-  static Function<VendingMachine, VendingMachine> simulate2(List<Input> inputs) {
+  static UnaryOperator<VendingMachine> simulate2(List<Input> inputs) {
     // exploit, that f: a -> a is a monoid
     // 1. start with identity (the zero element for this monoid)
     // 2. 'mappend' new functions
 
     return inputs.stream().reduce(
-        Function.identity(),
+        UnaryOperator.identity(),
         (func, input) -> {
           return vm -> func.apply(vm).next(input);
         },
@@ -138,7 +139,7 @@ public class StateVendingMachineTest {
 
   @Test
   public void machine2() {
-    Function<VendingMachine, VendingMachine> f = simulate2(
+    var f = simulate2(
         List.of(
             Input.COIN, // unlocks, coins + 1
             Input.TURN, // locks, items - 1
